@@ -6,8 +6,8 @@ HorribleSubs-Downloader is a small  Windows console application that automatical
 - Configurable torrent location
 - Configurable video quality
 
-##Instalation
-The easiest way is just to download the zip file from URL which should contain the latest build, unzip it in some folder configure the destination torrent folder and you are good to go.
+##Installation
+The easiest way is just to download the zip file from [https://gzuriprojects.s3.eu-central-1.amazonaws.com/HorribleSubsDownloader.zip](https://gzuriprojects.s3.eu-central-1.amazonaws.com/HorribleSubsDownloader.zip "url")  or download directly from [GitHub Release](https://github.com/gzuri/HorribleSubs-Downloader/releases/latest "GitHub release") which should always contain the latest build, unzip it in some folder configure the destination torrent folder and you are good to go.
 
 ###Configuration
 To configure destination folder open the file "HorribleSubsDownload.exe.config" with Notepad. You should see something like shown bellow
@@ -26,4 +26,15 @@ To configure destination folder open the file "HorribleSubsDownload.exe.config" 
 	</configuration>
 
 To configure torrent destination path change the value of the key "TorrentFileDestPath", keep in mind to keep surrounding quotes.
+
 To configure desired video quality change the value of the key "VideoQuality", possible values are "480p", "720p" and "1080p"
+
+**Note: Windows 8, 8.1 can prevent application from running with SmartScreen, just click more options and option Run anyway**
+
+##Automatic torrent download
+###Setting up torrrent client
+You can set your torrent client to automatically download torrent files from some folder, I'm using uTorrent and this is how my configuration looks like
+![](http://tinyurl.com/kum7q32) 
+
+###Setting up script run on startup
+Since this app is very light and doesn't waste almost any resources you can set it to run on Windows startup as explained in [http://windows.microsoft.com/en-us/windows/run-program-automatically-windows-starts#1TC=windows-7](http://windows.microsoft.com/en-us/windows/run-program-automatically-windows-starts#1TC=windows-7 "Microsoft documentation")
