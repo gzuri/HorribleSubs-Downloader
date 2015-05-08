@@ -1,4 +1,4 @@
-# HorribleSubs-Downloader
+# HorribleSubs-Downloader  ![AppVayour status](https://ci.appveyor.com/api/projects/status/60wftquacksfgng6/branch/master?svg=true)
 HorribleSubs-Downloader is a small  Windows console application that automatically downloads torrent files from [http://horriblesubs.info/](http://horriblesubs.info/ "HorribleSubs"). 
 
 ##Features
