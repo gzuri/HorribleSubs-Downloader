@@ -19,6 +19,7 @@ To configure destination folder open the file "HorribleSubsDownload.exe.config" 
 	    <add key="ConfigurationFilesPath" value=""/>
 	    <add key="VideoQuality" value="720p"/>
 	    <add key="LastDownloadedTorrent" value=""/>
+		<add key="ExcludeTorrents" value=""/>
 	  </appSettings>
       <startup> 
         <supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.5" />
@@ -28,6 +29,8 @@ To configure destination folder open the file "HorribleSubsDownload.exe.config" 
 To configure torrent destination path change the value of the key "TorrentFileDestPath", keep in mind to keep surrounding quotes.
 
 To configure desired video quality change the value of the key "VideoQuality", possible values are "480p", "720p" and "1080p"
+
+To configure excludes specify the names (without episode) in the key "ExcludeTorrents", multiple rules are separated by using semicolon (ex: "Anime1;Anime two;Anime three")
 
 **Note: Windows 8, 8.1 can prevent application from running with SmartScreen, just click more options and option Run anyway**
 

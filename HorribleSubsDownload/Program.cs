@@ -55,11 +55,14 @@ namespace HorribleSubsDownload
                         continue;
 
                     var torrentPath = Path.Combine(torrentSavePath, torrentFileName);
-                    if (!String.IsNullOrEmpty(torrentFileName) && torrentFileName != lastDownloadedTorrent && !excludeTorrents.Any(x=> torrentFileName.Contains(x)))
+                    if (!String.IsNullOrEmpty(torrentFileName) && torrentFileName != lastDownloadedTorrent)
                     {
-                        File.WriteAllBytes(torrentPath, torrentFile);
-                        newTorrents.Add(torrentFileName);
-                        Console.WriteLine(torrentFileName);
+                        if (!excludeTorrents.Any(x => torrentFileName.Contains(x)))
+                        {
+                            File.WriteAllBytes(torrentPath, torrentFile);
+                            newTorrents.Add(torrentFileName);
+                            Console.WriteLine(torrentFileName);
+                        }
                     }
                     else
                     {
@@ -93,7 +96,14 @@ namespace HorribleSubsDownload
                 appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 
             newTorrents = new List<string>();
-            excludeTorrents = new List<string>();
+
+            //Load exclude torrent rules
+            var exludeTorrentSetting = ConfigurationManager.AppSettings.Get("ExcludeTorrents");
+            if (!String.IsNullOrWhiteSpace(exludeTorrentSetting))
+                excludeTorrents = exludeTorrentSetting.Split(';').Where(x=> !String.IsNullOrWhiteSpace(x)).Select(x=> x.Trim()).ToList();
+            else
+                excludeTorrents = new List<string>();
+
             if (String.IsNullOrWhiteSpace(lastDownloadedTorrent))
                 isFirstRun = true;
 
