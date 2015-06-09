@@ -5,6 +5,7 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,7 +18,7 @@ namespace HorribleSubsDownload
         /// <summary>
         /// Stores last downloaded torrent from the DB
         /// </summary>
-        private static string lastDownloadedTorrent;
+        private static List<string> lastDownloadedTorrents;
         static List<string> newTorrents;
         static List<string> excludeTorrents;
 
@@ -55,7 +56,7 @@ namespace HorribleSubsDownload
                         continue;
 
                     var torrentPath = Path.Combine(torrentSavePath, torrentFileName);
-                    if (!String.IsNullOrEmpty(torrentFileName) && torrentFileName != lastDownloadedTorrent)
+                    if (!String.IsNullOrEmpty(torrentFileName) && lastDownloadedTorrents.All(x=> x != torrentFileName))
                     {
                         if (!excludeTorrents.Any(x => torrentFileName.Contains(x)))
                         {
@@ -87,13 +88,16 @@ namespace HorribleSubsDownload
         static void Main(string[] args)
         {
             var isFirstRun = false;
-            lastDownloadedTorrent = ConfigurationManager.AppSettings.Get("LastDownloadedTorrent");
+            if (!String.IsNullOrWhiteSpace(ConfigurationManager.AppSettings.Get("LastDownloadedTorrent")))
+                lastDownloadedTorrents = ConfigurationManager.AppSettings.Get("LastDownloadedTorrent").Split(';').ToList();
+            else 
+                lastDownloadedTorrents = new List<string>();
             
             var appDataFolder = String.Empty;
             if (!String.IsNullOrWhiteSpace(ConfigurationManager.AppSettings.Get("ConfigurationFilesPath")))
                 appDataFolder = ConfigurationManager.AppSettings.Get("ConfigurationFilesPath");
             else
-                appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                appDataFolder = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
             newTorrents = new List<string>();
 
@@ -104,7 +108,7 @@ namespace HorribleSubsDownload
             else
                 excludeTorrents = new List<string>();
 
-            if (String.IsNullOrWhiteSpace(lastDownloadedTorrent))
+            if (lastDownloadedTorrents.Count == 0)
                 isFirstRun = true;
 
             var torrentFileDestPath = ConfigurationManager.AppSettings.Get("TorrentFileDestPath");
