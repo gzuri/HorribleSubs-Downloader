@@ -6,15 +6,15 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
+
 
 namespace HorribleSubsDownload
 {
     class Program
     {
-        const string LOCAL_DB = "HorribleSubsDownloaderLocalDB.csv";
-        const string EXCLUDE_DB = "HorribleSubsExclude.csv";
         /// <summary>
         /// Stores last downloaded torrent from the DB
         /// </summary>
@@ -36,11 +36,9 @@ namespace HorribleSubsDownload
                 throw new  ConfigurationException("Video quality must be set on 480p or 720p or 1080p");
 
             doc.Load(fileName);
-            var torrents = doc.DocumentNode.Descendants("a").Where(d =>
-                    d.ParentNode.ParentNode.Attributes.Contains("id") && d.ParentNode.ParentNode.Attributes["id"].Value.Contains(videoQuality)
-                    && d.ParentNode.Attributes.Contains("class") && d.ParentNode.Attributes["class"].Value.Contains("ind-link") && d.InnerHtml == "Torrent")
+            var torrents = doc.DocumentNode.Descendants("a").Where(d => d.ParentNode.ParentNode.ParentNode.Descendants().First().Descendants().First().InnerHtml.Contains(videoQuality)
+                    && d.ParentNode.Attributes.Contains("class") && d.ParentNode.Attributes["class"].Value.Contains("dl-link") && d.InnerHtml == "Torrent")
                     .Select(x => x.Attributes["href"].Value);
-            
 
             foreach (var torrent in torrents)
             {
@@ -75,10 +73,10 @@ namespace HorribleSubsDownload
             return isAlreadyFound;
         }
 
-        private static void UpdateSetting(string value)
+        private static void UpdateSetting(List<string> newTorrents)
         {
             Configuration configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            configuration.AppSettings.Settings["LastDownloadedTorrent"].Value = value;
+            configuration.AppSettings.Settings["LastDownloadedTorrent"].Value = String.Join(";", newTorrents.Take(10).ToArray());
             configuration.Save();
 
             ConfigurationManager.RefreshSection("appSettings");
@@ -115,6 +113,8 @@ namespace HorribleSubsDownload
             if (String.IsNullOrWhiteSpace(torrentFileDestPath))
                 throw new ConfigurationException("TorrentFileDestPath must be defined");
 
+            DirectorySecurity fsecurity = Directory.GetAccessControl(torrentFileDestPath);
+
             if (!Directory.Exists(torrentFileDestPath))
                 Directory.CreateDirectory(torrentFileDestPath);
             var pageIndex = 0;
@@ -138,7 +138,7 @@ namespace HorribleSubsDownload
             } while (!isFirstRun || pageIndex < 1);
 
             if (newTorrents.Count > 0)
-                UpdateSetting(newTorrents.First());
+                UpdateSetting(newTorrents);
         }
     }
 }
