@@ -7,7 +7,7 @@ HorribleSubs-Downloader is a small  Windows console application that automatical
 - Configurable video quality
 
 ##Installation
-The easiest way is just to download the zip file from [https://gzuri.blob.core.windows.net/public/HorribleSubsDownload.zip](url "url")  or download directly from [GitHub Release](https://github.com/gzuri/HorribleSubs-Downloader/releases/latest "GitHub release") which should always contain the latest build, unzip it in some folder configure the destination torrent folder and you are good to go.
+The easiest way is just to download the zip file from [ur](https://gzuri.blob.core.windows.net/public/HorribleSubsDownload.zip "url")  or download directly from [GitHub Release](https://github.com/gzuri/HorribleSubs-Downloader/releases/latest "GitHub release") which should always contain the latest build, unzip it in some folder configure the destination torrent folder and you are good to go.
 
 ###Configuration
 To configure destination folder open the file "HorribleSubsDownload.exe.config" with Notepad. You should see something like shown bellow
