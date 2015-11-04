@@ -8,6 +8,7 @@ using System.Net;
 using System.Reflection;
 using System.Security.AccessControl;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 
@@ -33,14 +34,27 @@ namespace HorribleSubsDownload
             HtmlDocument doc = new HtmlDocument();
             var videoQuality = ConfigurationManager.AppSettings.Get("VideoQuality");
             if (videoQuality != "720p" && videoQuality != "480p" && videoQuality != "1080p")
-                throw new  ConfigurationException("Video quality must be set on 480p or 720p or 1080p");
+                throw new ConfigurationException("Video quality must be set on 480p or 720p or 1080p");
 
             doc.Load(fileName);
-            var torrents = doc.DocumentNode.Descendants("a").Where(d => d.ParentNode.ParentNode.ParentNode.Descendants().First().Descendants().First().InnerHtml.Contains(videoQuality)
-                    && d.ParentNode.Attributes.Contains("class") && d.ParentNode.Attributes["class"].Value.Contains("dl-link") && d.InnerHtml == "Torrent")
-                    .Select(x => x.Attributes["href"].Value);
+            var downloadBundles = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("DownloadBundles"));
+            var torrentLinks = new List<string>();
+            var releases = doc.DocumentNode.Descendants("div").Where(d => d.Attributes.Contains("class") && d.Attributes["class"].Value.StartsWith("release-links") && d.Attributes["class"].Value.Contains(videoQuality));
+            foreach (var release in releases)
+            {
+                var releaseName = release.Descendants("i").First(x => x.ParentNode.Attributes.Contains("class") && x.ParentNode.Attributes["class"].Value.Contains("dl-label")).InnerHtml;
+                var releaseTorrentLink = release.Descendants("a").First(d=> d.ParentNode.Attributes.Contains("class") && d.ParentNode.Attributes["class"].Value.Contains("dl-link") && d.InnerHtml == "Torrent").Attributes["href"].Value;
+                
+                if (Regex.IsMatch(releaseName, @"\([0-9]*-[0-9]*\)"))
+                {
+                    if (downloadBundles)
+                        torrentLinks.Add(releaseTorrentLink);
+                }
+                else
+                    torrentLinks.Add(releaseTorrentLink);
+            }
 
-            foreach (var torrent in torrents)
+            foreach (var torrent in torrentLinks)
             {
                 //Download torrent
                 using (var client = new WebClient())
